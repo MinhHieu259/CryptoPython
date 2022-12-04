@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="Description" content="Enter your description here" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    #tableCoin{
+      margin-top: 50px;
+    }
+    </style>
+    <title>Home</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/chart">Chart</a>
+              </li>
+             
+            </ul>
+            <form class="d-flex">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </nav>
+      <main>
+        <div class="container">
+          <table class="table" id="tableCoin">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Coin</th>
+                <th scope="col">Price</th>
+                <th scope="col">Market Cap</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for coin in coins %}
+              <tr>
+                <th scope="row">1</th>
+                <td>
+                  <img id="image_{{coin['id']}}" src="https://www.cryptocompare.com/{{coin['image']}}" width="50" />
+                  <p id="fullname_{{coin['id']}}" style="font-weight:bold;">{{coin['fullname']}}</p>
+                  <p id="name_{{coin['id']}}">{{coin['name']}}</p>
+                </td>
+                <td id="price_{{coin['id']}}">{{coin['price']}}</td>
+                <td id="marketcap_{{coin['id']}}">{{coin['marketcap']}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/js/bootstrap.min.js"></script>
+    <script>
+      setInterval(function(){
+        fetch('/data_json').then(
+          response => response.json()
+        ).then(
+          data => 
+            data.forEach(coin => 
+              updateElement(coin)
+            ))
+      }, 1000);
+
+      function updateElement(coin) {
+        Object.entries(coin).forEach(([k,v]) => {
+          element = document.getElementById(k + "_" + coin.id) 
+          if(document.getElementById(k + "_" + coin.id) != null){
+            previousValue = element.innerHTML
+          }
+         
+          if(previousValue !== v.toString() && element != null) {
+           blinkUpdate(element, previousValue, v.toString());
+          }
+        })
+      }
+
+      function blinkUpdate(element, previousValue, newValue, newColor="#00ff00") {
+        previousColor = element.style.color;
+        element.innerHTML = newValue;
+        if(newValue < previousValue){
+          newColor = "#FF0000"
+        }
+        element.style.color = newColor;
+
+        setTimeout(() => {
+          element.style.color = previousColor
+        }, 2000)
+      }
+    </script>
+  </body>
+</html>
